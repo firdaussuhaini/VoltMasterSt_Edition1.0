@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VOLTMASTER PRO v1.8 | FULL SPEC</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root { --bg:#020617; --card:#111827; --accent:#22c55e; --text:#94a3b8; --border:#334155; --pro:#f59e0b; --err:#ef4444; }
+body{margin:0;font-family: Arial, sans-serif;background:var(--bg);color:white;padding-bottom:50px;}
+header{text-align:center;padding:25px;background:#0f172a;border-bottom:4px solid var(--pro);}
+header h1 { margin: 0; font-size: 1.5rem; letter-spacing: 1px; }
+header p { margin: 5px 0 0 0; color: var(--pro); font-weight: bold; font-size: 0.8rem; text-transform: uppercase;}
+.container{max-width:1100px;margin:auto;padding:10px;}
+.card{background:var(--card);padding:15px;border-radius:12px;margin-top:15px;border:1px solid var(--border);}
+h3{margin-top:0;color:var(--accent);font-size:1rem;border-bottom:1px solid var(--border);padding-bottom:5px;margin-bottom:10px;}
+.grid{display:grid;grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));gap:10px;margin-bottom:10px;}
+input,select{width:100%;padding:8px;background:#0f172a;color:white;border:1px solid var(--border);border-radius:4px;box-sizing: border-box;font-size:0.85rem;}
+button{width:100%;padding:15px;margin-top:15px;background:var(--accent);border:none;font-weight:bold;cursor:pointer;border-radius:4px;font-size:1rem;color:#020617;}
+.result{white-space:pre-wrap;margin-top:20px;background:#000;padding:25px;display:none;border-radius:8px;font-family: 'Courier New', monospace;font-size:0.85rem;border:1px solid var(--accent);line-height:1.4;}
+label{font-size:0.7rem;color:var(--text);display:block;margin-bottom:3px;}
+.settings-panel { background: #1e293b; padding: 15px; border-radius: 8px; border-left: 4px solid var(--pro); margin-top: 15px; }
+.ac-group { border: 1px dashed var(--border); padding: 8px; border-radius: 4px; margin-top: 5px; }
+.badge { background: var(--pro); color: #000; padding: 2px 6px; border-radius: 3px; font-size: 0.6rem; vertical-align: middle; margin-left: 10px; }
+.validation-msg { background: rgba(239, 68, 68, 0.1); border: 1px solid var(--err); color: var(--err); padding: 10px; border-radius: 6px; margin-top: 15px; display: none; font-size: 0.8rem; }
+</style>
+</head>
+<body>
+
+<header>
+    <h1>VOLTMASTER PRO <span class="badge">v1.8 EXHAUST-FIX</span></h1>
+    <p>Complete Engineering & Pricing Suite</p>
+</header>
+
+<div class="container">
+    <div class="card">
+        <h3>1. Project & Branding</h3>
+        <div class="grid">
+            <div><label>Company Name</label><input id="compName" placeholder="Volt Solutions Sdn Bhd" type="text"></div>
+            <div><label>Prepared By</label><input id="prepBy" placeholder="Engineer Name" type="text"></div>
+            <div><label>Project Ref</label><input id="projRef" placeholder="PROJ/2026/001" type="text"></div>
+        </div>
+    </div>
+
+    <div class="settings-panel">
+        <h3 style="color:var(--pro); border-color:var(--pro)">Pro Setting: Dynamic Pricing (RM)</h3>
+        <div class="grid">
+            <div><label>Light/Fan/Exhaust Pt</label><input id="rateL" value="85" type="number"></div>
+            <div><label>Socket Point</label><input id="rateS" value="160" type="number"></div>
+            <div><label>Aircond Point</label><input id="rateAC" value="250" type="number"></div>
+            <div><label>Water Heater Pt</label><input id="rateWH" value="280" type="number"></div>
+            <div><label>Outdoor Light Pt</label><input id="rateOL" value="120" type="number"></div>
+            <div><label>DB Base Rate</label><input id="rateDB" value="650" type="number"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>2. System Configuration</h3>
+        <div class="grid">
+            <div><label>Supply System</label><select id="phaseType" onchange="validateInput()"><option value="1">1-Phase (230V)</option><option value="3">3-Phase (400V)</option></select></div>
+            <div><label>Diversity (DF)</label><input id="pDF" value="Auto" disabled style="background:#0f172a; color:var(--pro); font-weight:bold;"></div>
+            <div><label>Power Factor</label><input id="pPF" value="0.85" step="0.05" type="number"></div>
+            <div><label>Wiring Style</label><select id="wireStyle"><option value="conduit">High Impact Conduit (ST Std)</option><option value="concealed">Concealed Wiring</option><option value="trunking">Steel Trunking</option></select></div>
+        </div>
+        <div class="grid">
+            <div><label>DB Enclosure Type</label><select id="dbMat"><option value="Metal">Metal (Recommended)</option><option value="PVC">PVC (Internal Only)</option></select></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>3. Load Quantities</h3>
+        <div class="grid">
+            <div><label>Lighting</label><input id="qL" value="10" type="number" oninput="validateInput()"></div>
+            <div><label>Ceiling Fan</label><input id="qF" value="5" type="number" oninput="validateInput()"></div>
+            <div><label>Exhaust Fan</label><input id="qEF" value="2" type="number" oninput="validateInput()"></div>
+            <div><label>Socket Pts</label><input id="qS" value="12" type="number" oninput="validateInput()"></div>
+            <div><label>Water Heater</label><input id="qWH" value="1" type="number" oninput="validateInput()"></div>
+            <div><label>Outdoor Light</label><input id="qOL" value="2" type="number" oninput="validateInput()"></div>
+        </div>
+        <div class="grid">
+            <div class="ac-group"><label>AC 1 (HP)</label><input id="hp1" value="1.0" step="0.5" type="number" oninput="validateInput()"><label>Qty</label><input id="qty1" value="1" type="number" oninput="validateInput()"></div>
+            <div class="ac-group"><label>AC 2 (HP)</label><input id="hp2" value="1.5" step="0.5" type="number" oninput="validateInput()"><label>Qty</label><input id="qty2" value="0" type="number" oninput="validateInput()"></div>
+            <div class="ac-group"><label>AC 3 (HP)</label><input id="hp3" value="2.5" step="0.5" type="number" oninput="validateInput()"><label>Qty</label><input id="qty3" value="0" type="number" oninput="validateInput()"></div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>4. Technical Parameters</h3>
+        <div class="grid">
+            <div><label>Light (W)</label><input id="wL" value="15" type="number"></div>
+            <div><label>Fan (W)</label><input id="wF" value="75" type="number"></div>
+            <div><label>Exhaust (W)</label><input id="wEF" value="40" type="number"></div>
+            <div><label>Outdoor (W)</label><input id="wOL" value="30" type="number"></div>
+            <div><label>Heater (W)</label><input id="wWH" value="3000" type="number"></div>
+            <div><label>Max. Length (m)</label><input id="cLen" value="30" type="number" oninput="validateInput()"></div>
+        </div>
+        <div class="grid">
+            <div><label>Socket Mode (SSO)</label><select id="pS"><option value="2">Radial (max 2-3 pts / 4mm²)</option><option value="10">Ring (max 10 pts / 2.5mm²)</option></select></div>
+        </div>
+
+        <div id="vMsg" class="validation-msg"></div>
+
+        <button id="genBtn" onclick="calc()">GENERATE FULL SPEC REPORT</button>
+        <div id="out" class="result"></div>
+        <button id="pdfBtn" style="background:#334155;color:white;display:none;margin-top:10px;" onclick="pdf()">EXPORT COMPLIANCE PDF</button>
+    </div>
+</div>
+
+<script>
+const breakers = [20, 32, 40, 63, 80, 100, 125];
+const mvAM = { "1.5": 29, "2.5": 18, "4.0": 11, "6.0": 7.3, "10.0": 4.4, "16.0": 2.8, "25.0": 1.8, "35.0": 1.35 };
+
+function getRecSize(cableSize, mode) {
+    if (mode === 'concealed') return "N/A (Concealed)";
+    if (mode === 'conduit') {
+        if (cableSize <= 2.5) return "20mm PVC Conduit (High Impact)";
+        if (cableSize <= 6.0) return "25mm PVC Conduit (High Impact)";
+        return "32mm PVC Conduit (High Impact)";
+    } else {
+        if (cableSize <= 4.0) return "1\" x 2\" PVC/Steel Trunking";
+        return "2\" x 3\" PVC/Steel Trunking";
+    }
+}
+
+function getACSpecs(hp) {
+    if (hp <= 1.5) return { mcb: "16A", cable: "2.5mm²", val: 2.5 };
+    if (hp <= 2.5) return { mcb: "20A", cable: "4.0mm²", val: 4.0 };
+    return { mcb: "32A", cable: "6.0mm²", val: 6.0 };
+}
+
+function validateInput() {
+    const vMsg = document.getElementById('vMsg');
+    let errors = [];
+    const getVal = (id) => parseFloat(document.getElementById(id).value) || 0;
+    const phase = document.getElementById('phaseType').value;
+    if(getVal('cLen') > 70) errors.push("CRITICAL: Distance exceeds 70m. Voltage drop impact.");
+    if(phase == "1" && getVal('qty1') + getVal('qty2') + getVal('qty3') > 6) errors.push("CRITICAL: AC load high for 1-Phase.");
+    vMsg.style.display = errors.length > 0 ? "block" : "none";
+    vMsg.innerHTML = errors.length > 0 ? "<b>⚠️ NOTES:</b><br>" + errors.map(e => "• " + e).join("<br>") : "";
+}
+
+function calc() {
+    try {
+        const getV = (id) => {
+            const el = document.getElementById(id);
+            return el ? (isNaN(parseFloat(el.value)) ? el.value : parseFloat(el.value)) : 0;
+        };
+
+        const phase = getV('phaseType');
+        const wStyle = document.getElementById('wireStyle').value;
+        const dbMaterial = document.getElementById('dbMat').value;
+        const len = getV('cLen');
+        const pf = getV('pPF');
+        const d = new Date();
+        const dateStr = String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0') + '/' + d.getFullYear();
+        
+        let totalMCB = 0, circuitLines = "";
+        const loadL = getV('qL') * getV('wL'), loadF = getV('qF') * getV('wF'), loadEF = getV('qEF') * getV('wEF'),
+              loadOL = getV('qOL') * getV('wOL'), loadS = getV('qS') * 250, loadWH = getV('qWH') * getV('wWH');
+        
+        let acTotalW = 0, acQty = 0, acRows = "", acArray = [];
+        for(let i=1; i<=3; i++){
+            let h = getV('hp'+i), q = getV('qty'+i);
+            if(q > 0){
+                let w = h * 746; acTotalW += (w * q); acQty += q;
+                for(let j=0; j<q; j++) acArray.push(w);
+                let s = getACSpecs(h);
+                acRows += `   - ${h}HP AC: Qty ${q} | MCB ${s.mcb} | Cable ${s.cable}\n     Rec Size: ${getRecSize(s.val, wStyle)}\n`;
+            }
+        }
+
+        // Diversity Calculation (Updated for EF)
+        const mdL = (loadL + loadF + loadEF + loadOL) * 0.66;
+        const ptsPerCct = getV('pS');
+        const sCcts = Math.ceil(getV('qS') / ptsPerCct);
+        const cctRating = ptsPerCct == 10 ? (32 * 230) : (20 * 230);
+        const mdS = sCcts > 0 ? (cctRating + (sCcts - 1) * cctRating * 0.4) : 0;
+
+        let fixedAppliances = [];
+        if(getV('qWH') > 0) for(let i=0; i<getV('qWH'); i++) fixedAppliances.push(getV('wWH'));
+        fixedAppliances = fixedAppliances.concat(acArray).sort((a,b) => b-a);
+        let mdFixed = 0;
+        fixedAppliances.forEach((watt, index) => { (index < 2) ? mdFixed += watt : mdFixed += (watt * 0.25); });
+
+        const TCL = loadL + loadF + loadEF + loadOL + loadS + loadWH + acTotalW;
+        const MD = mdL + mdS + mdFixed;
+        document.getElementById('pDF').value = (MD / (TCL||1)).toFixed(2);
+
+        const IbTotal = MD / ((phase == "1" ? 230 : 1.732 * 400) * pf);
+        const IbPerPhase = (phase == "3") ? (MD / 3) / (230 * pf) : IbTotal;
+        
+        let targetAmps = IbPerPhase * 1.1; 
+        let mainS = breakers.find(b => b >= targetAmps);
+        if (phase == "1") { if (!mainS || mainS > 63) mainS = 63; if (mainS < 32) mainS = 32; }
+        else { if (!mainS) mainS = 125; if (mainS < 40) mainS = 40; }
+
+        let mainCab = (mainS <= 32) ? 6 : (mainS <= 40) ? 10 : (mainS <= 63) ? 16 : 25;
+        let vDropPct = ((mvAM[mainCab.toFixed(1)] || 2.8) * IbPerPhase * len) / (phase == "1" ? 2300 : 4000);
+
+        // Smart Correction Logic
+        let autoNote = "";
+        if (vDropPct > 4) {
+            let sizes = [6, 10, 16, 25, 35];
+            let currentIdx = sizes.indexOf(mainCab);
+            for (let i = currentIdx + 1; i < sizes.length; i++) {
+                let testCab = sizes[i];
+                let testDrop = ((mvAM[testCab.toFixed(1)] || 1.35) * IbPerPhase * len) / (phase == "1" ? 2300 : 4000);
+                if (testDrop <= 4) {
+                    autoNote = `*SUGGESTION: Main cable upgraded to ${testCab}mm² due to voltage drop.*`;
+                    mainCab = testCab; vDropPct = testDrop; break;
+                }
+            }
+        }
+
+        const addRow = (qty, label, ptsPerCct, mcb, cable, cSizeVal, specsText, note = "") => {
+            if (qty <= 0) return "";
+            const circuits = Math.ceil(qty / ptsPerCct); totalMCB += circuits;
+            return `${label}\n   - ${specsText} | Circuits: ${circuits} | MCB: ${mcb} | Cable: ${cable}\n     Rec Size: ${getRecSize(cSizeVal, wStyle)}${note ? ` | ${note}` : ""}\n\n`;
+        };
+
+        // --- Circuit Lines ---
+        circuitLines += addRow(getV('qL'), "A. LIGHTING", 10, "6A", "1.5mm²", 1.5, `${getV('wL')}W/pt`);
+        circuitLines += addRow(getV('qF'), "B. CEILING FANS", 10, "10A", "1.5mm²", 1.5, `${getV('wF')}W/pt`);
+        circuitLines += addRow(getV('qEF'), "C. EXHAUST FANS", 10, "6A", "1.5mm²", 1.5, `${getV('wEF')}W/pt`); // ADDED BACK
+        circuitLines += addRow(getV('qOL'), "D. OUTDOOR LIGHTS", 10, "6A", "1.5mm²", 1.5, `${getV('wOL')}W/pt`, "RCD: 30mA Req");
+        
+        if(getV('qS') > 0) {
+            const isRing = (getV('pS') == 10);
+            const cS = Math.ceil(getV('qS') / getV('pS')); totalMCB += cS;
+            const ssoCable = isRing ? "2.5mm²" : "4.0mm²";
+            const ssoMCB = isRing ? "32A (Ring)" : "20A (Radial)";
+            const ssoVal = isRing ? 2.5 : 4.0;
+            circuitLines += `E. SOCKET OUTLET\n   - Qty: ${getV('qS')} | Circuits: ${cS} | MCB: ${ssoMCB} | Cable: ${ssoCable}\n     Rec Size: ${getRecSize(ssoVal, wStyle)}\n\n`;
+        }
+        
+        if(acQty > 0) { totalMCB += acQty; circuitLines += `F. AIR-CONDITIONING\n${acRows}\n`; }
+        if(getV('qWH') > 0) {
+            totalMCB += getV('qWH');
+            circuitLines += `G. WATER HEATER\n   - ${getV('wWH')}W | Qty: ${getV('qWH')} | MCB: 20A | Cable: 4.0mm² | RCD: 10mA Req\n     Rec Size: ${getRecSize(4.0, wStyle)}\n\n`;
+        }
+
+        const spareWays = Math.ceil(totalMCB * 0.25);
+        const totalWays = totalMCB + spareWays;
+        const dbSize = totalWays <= 8 ? "8-Way" : totalWays <= 12 ? "12-Way" : totalWays <= 18 ? "18-Way" : totalWays <= 24 ? "24-Way" : "36-Way";
+        const dbType = (phase == "1") ? `SPN ${dbMaterial}` : `TPN ${dbMaterial}`;
+
+        // Pricing Calculation (Inclusive of EF)
+        let mult = wStyle === 'concealed' ? 1.4 : wStyle === 'conduit' ? 1.25 : 1.1;
+        let totalVal = ((getV('qL')+getV('qF')+getV('qEF'))*getV('rateL')*mult) + (getV('qOL')*getV('rateOL')*mult) + (getV('qS')*getV('rateS')*mult) + (acQty*getV('rateAC')*mult) + (getV('qWH')*getV('rateWH')*mult) + getV('rateDB');
+
+        const report = `============================================================
+              ${(getV('compName') || "VOLTMASTER SOLUTIONS").toUpperCase()}
+              ST COMPLIANCE TECHNICAL REPORT (MS 1979)
+============================================================
+REF NO        : ${getV('projRef') || "PROJ-" + new Date().getTime()}
+PREPARED BY   : ${getV('prepBy') || "SYSTEM"}
+DATE          : ${dateStr}
+SYSTEM        : ${phase}-PHASE | PF: ${pf} | WIRING: ${wStyle.toUpperCase()}
+------------------------------------------------------------
+[1. INDIVIDUAL CIRCUIT DETAILS]
+------------------------------------------------------------
+${circuitLines}
+[2. DB & PROTECTION DETAILS]
+------------------------------------------------------------
+Distribution Board : ${dbSize} ${dbType}
+Main Switch        : ${mainS}A (Min. 6kA Rated)
+Incoming Cable     : ${mainCab}mm² (Cu/PVC)
+Main RCD           : 63A / 100mA (TYPE A Mandatori ST)
+RCD (Outdoor)      : 30mA (MS 1979 Clause 5.3.1)
+RCD (Heater)       : 10mA (Electricity Regulations 1994)
+Total MCB Ways     : ${totalMCB} Used + ${spareWays} Spare (Total: ${totalWays} Way)
+Phase Balance      : ${phase == "3" ? "R:" + IbPerPhase.toFixed(1) + "A | Y:" + IbPerPhase.toFixed(1) + "A | B:" + IbPerPhase.toFixed(1) + "A" : "Single Phase"}
+
+[3. DESIGN SUMMARY]
+------------------------------------------------------------
+Total Connected Load (TCL) : ${(TCL/1000).toFixed(2)} kW
+Maximum Demand (MD)        : ${(MD/1000).toFixed(2)} kW
+Voltage Drop Status        : ${vDropPct.toFixed(2)}% (${vDropPct <= 4 ? 'PASSED' : 'FAILED'})
+Cable Length       : ${len} meters
+${autoNote}
+
+[4. COMMERCIAL ESTIMATE]
+------------------------------------------------------------
+ESTIMATED TOTAL: RM ${totalVal.toLocaleString()}
+
+*IMPORTANT DISCLAIMER:*
+1. This cost estimation is for WIRING & INSTALLATION work only.
+2. PRICE DOES NOT INCLUDE electrical appliances (AC units, Heaters), 
+   lighting fittings, fans, or any specialized equipment.
+3. Actual pricing may vary based on site conditions and material brands.
+
+[5. PROFESSIONAL DISCLAIMER]
+------------------------------------------------------------
+This calculation is based on MS 1979 & Suruhanjaya Tenaga (ST) 
+Guidelines. However, this report serves as a design guide only. 
+Final design MUST BE verified and endorsed by a Competent Person 
+(Wireman/Chargeman/Engineer) registered with ST before execution.
+
+============================================================`;
+
+        document.getElementById('out').style.display = "block";
+        document.getElementById('out').innerText = report;
+        document.getElementById('pdfBtn').style.display = "block";
+    } catch (e) { alert("Error: " + e.message); }
+}
+
+async function pdf() {
+    const { jsPDF } = window.jspdf;
+    let doc = new jsPDF('p', 'mm', 'a4');
+    const outEl = document.getElementById('out');
+    if (!outEl.innerText) return;
+    doc.setFont("courier", "bold"); doc.setFontSize(10);
+    const lines = doc.splitTextToSize(outEl.innerText, 180);
+    const pageHeight = 270; 
+    let cursorY = 20;
+    lines.forEach((line) => {
+        if (cursorY > pageHeight) { doc.addPage(); cursorY = 20; }
+        doc.text(line, 15, cursorY); cursorY += 5;
+    });
+    doc.save(`VoltMaster_Report_${new Date().getTime()}.pdf`);
+}
+</script>
+</body>
+</html>
